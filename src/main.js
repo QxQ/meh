@@ -177,8 +177,9 @@ $(function() {
 
 function updateMessage() {
 	message = '\
+if you can e-mail, but can\'t access any other website, you can e-mail updateMeh@gmail.com, and a message will automaticly be replied with an updated version attached.\n\n\
 if you have internet, then just go to http://evacle.com/meh to use the latest version. however this website not reliable and is down a lot.\n\n\
-if you can e-mail, but can\'t access any other website, you can e-mail updateMeh@gmail.com, and a message will automaticly be replied with an updated version attached.\
+another option would be to go to https://github.com/QxQ/meh. just click the "download zip" at the right of the webpage. this site also has all the code to make the project.\
 '
 	alert( message );
 }
