@@ -11,6 +11,8 @@ TODO:
 	make sure images are normal images. (not some weird thing that some applications can't open)
 	get rid of extra unused css
 	use nicer alert boxes
+	don't allow downloading without any pictures
+	Get rid of anoying errors about not finding UI modules.
 
 libaries used: 
 	jic: compresses images: https://github.com/brunobar79/J-I-C
@@ -32,7 +34,7 @@ libaries used:
 <link rel="stylesheet" href="src//style.css">
 <!-- HERE IS THE MAGIC ... -->
 <script src="src/libs/JIC.js" type="text/javascript"></script>
-<script src="src/libs/jszip/jszip.js" type="text/javascript"></script>
+<script src="src/libs/jszip/dist/jszip.js" type="text/javascript"></script>
 <script src="src/main.js" type="text/javascript"></script>
 
 </head>
@@ -71,7 +73,7 @@ libaries used:
     </article>
   </section>
   <footer class='content'>
-    using version MEH version 0.1. click<a class='footer_link' onclick='updateMessage(event)'>here</a>to update
+    using MEH version 0.3. click<a class='footer_link' onclick='updateMessage(event)'>here</a>to update
     <span class='credits'>
     	Made using <a href='https://github.com/brunobar79/J-I-C' class='footer_link'>J-I-C</a> and <a href='http://stuk.github.io/jszip/' class='footer_link'>JSzip</a> library
     </span>

@@ -82,9 +82,11 @@ $(function() {
         	file = files[i];
         	reader.file = file;
         	reader.onload = reader_onload
+        	/*
         	console.log("Filename:" + file.name);
         	console.log("Filesize:" + (parseInt(file.size) / 1024) + " Kb");
 	        console.log("Type:" + file.type);
+	        */
     	    reader.readAsDataURL(file);
     	}
     	return false;
@@ -96,48 +98,75 @@ $(function() {
 
     //HANDLE COMPRESS BUTTON
     encodeButton.addEventListener('click', function(e) {
-
-        var quality = parseFloat(encodeQuality.value / 100);
-        console.log("Quality >>" + quality);
-        
-        var maxSize = parseFloat(maxImageSize.value);
-        console.log("Max size >>" + maxSize);
-
-        console.log("process start...");
-        var time_start = new Date().getTime();
-        var images = document.getElementById('imagelist').getElementsByClassName('imagelist-image');
-        
-        var zip = new JSZip();
-        var root = zip.folder("images");
-        
-        callback_count=0;
-        function finish() {
-        	var content = zip.generate();
-		    location.href="data:application/zip;base64,"+content;
-		    
-	        var duration = new Date().getTime() - time_start;
-	        
-	        console.log('process finished...');
-	        console.log('Processed in: ' + duration + 'ms');
-        }
-        for (var i=0;i<images.length;++i) {
-        	var image = images[i]
-        	var src = jic.compress(image,quality).src;
-        	resize(src, maxSize, function(src, image) {
-	        	src = src.split('data:image/jpeg;base64,')[1] //we don't want a full url, just the content of it, so we cut of the beggining of it.
-	
-	        	var filename = image.parentNode.getElementsByClassName('imagelist-title')[0].title;
-	        	filename = filename.split('.');
-	        	filename[filename.length-1]='jpg';
-	        	filename = filename.join('.');
-	        	root.file(filename, src, {base64: true});
-	        	
-	        	callback_count+=1;
-	        	if (callback_count==images.length) {
-	        		finish();
-	        	}
-        	}, image);
-	    }
+    	
+	    var loading = document.createElement('div');
+	   	loading.className = 'loading';
+	   		var loadingPane = document.createElement('div');
+	   		loadingPane.className = 'loading-pane';
+	   			var loadingText = document.createElement('p');
+	   			loadingText.className = 'loading-text';
+	   			loadingText.innerHTML = 'processing...';
+	   			loadingPane.appendChild(loadingText);
+	   			
+	   			var loadingProgress = document.createElement('p');
+	   			loadingProgress.className = 'loading-progress';
+	   			loadingProgress.innerHTML = 'starting';
+	   			loadingPane.appendChild(loadingProgress);
+	   		loading.appendChild(loadingPane);
+	   	document.body.appendChild(loading);
+	   	
+		var quality = parseFloat(encodeQuality.value / 100);
+		console.log("Quality >>" + quality);
+		
+		var maxSize = parseFloat(maxImageSize.value);
+		console.log("Max size >>" + maxSize);
+		console.log("process start...");
+		var time_start = new Date().getTime();
+		
+		var images = document.getElementById('imagelist').getElementsByClassName('imagelist-image');
+		
+		// process the images
+		
+		var zip = new JSZip();
+		var root = zip.folder("images");
+		
+		callback_count=0;
+		function finish() {
+			loadingProgress.innerHTML = 'finishing';
+			var content = zip.generate();
+			
+			var duration = new Date().getTime() - time_start;
+			   
+			console.log('process finished...');
+			console.log('Processed in: ' + duration + 'ms');
+			
+			navigate = "data:application/zip;base64,"+content;
+			loadingProgress.innerHTML = navigate;
+			
+			//hide loading sign
+			loading.parentElement.removeChild(loading);
+			
+			location.href = navigate;
+		}
+		loadingProgress.innerHTML = '0/'+images.length;
+		for (var i=0;i<images.length;++i) {
+			var image = images[i];
+			var src = jic.compress(image,quality).src;
+			resize(src, maxSize, function(src, image) {
+				src = src.split('data:image/jpeg;base64,')[1] //we don't want a full url, just the content of it, so we cut of the beggining of it.
+				var filename = image.parentNode.getElementsByClassName('imagelist-title')[0].title;
+				filename = filename.split('.');
+				filename[filename.length-1]='jpg';
+				filename = filename.join('.');
+				root.file(filename, src, {base64: true});
+				
+				callback_count+=1;
+				loadingProgress.innerHTML = callback_count+'/'+images.length;
+				if (callback_count==images.length) {
+					finish();
+				}
+			}, image);
+		}
     
     }, false);
     
@@ -176,10 +205,6 @@ $(function() {
 });
 
 function updateMessage() {
-	message = '\
-if you can e-mail, but can\'t access any other website, you can e-mail updateMeh@gmail.com, and a message will automaticly be replied with an updated version attached.\n\n\
-if you have internet, then just go to http://evacle.com/meh to use the latest version. however this website not reliable and is down a lot.\n\n\
-another option would be to go to https://github.com/QxQ/meh. just click the "download zip" at the right of the webpage. this site also has all the code to make the project.\
-'
+	message = 'You can look for updates at https://github.com/QxQ/meh. just click the "download zip" at the right of the webpage. this site also has all the code to make the project.'
 	alert( message );
 }
